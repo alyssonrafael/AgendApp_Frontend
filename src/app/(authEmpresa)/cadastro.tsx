@@ -68,7 +68,7 @@ export default function CadastroEmpresaScreen() {
         <ThemedText
           type="link"
           style={styles.link}
-          onPress={() => router.replace("/(auth)")}
+          onPress={() => router.replace("/(auth)/cadastro")}
         >
           Clique aqui
         </ThemedText>

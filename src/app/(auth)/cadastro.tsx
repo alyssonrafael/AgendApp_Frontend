@@ -64,11 +64,11 @@ export default function CadastroScreen() {
       </ThemedText>
 
       <ThemedText>
-        Cadastre-se como negocio{" "}
+        Empresa?{" "}
         <ThemedText
           type="link"
           style={styles.link}
-          onPress={() => router.replace("/(authEmpresa)/cadastro")}
+          onPress={() => router.replace("/(authEmpresa)")}
         >
           Clique aqui
         </ThemedText>

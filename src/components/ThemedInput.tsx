@@ -1,79 +1,98 @@
-import React, { useState } from 'react';
-import { TextInput, type TextInputProps, StyleSheet, View, TouchableOpacity } from 'react-native';
+import React, { useState } from "react";
+import {
+  TextInput,
+  type TextInputProps,
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 
-import { useThemeColor } from '@/src/hooks/useThemeColor';
-import { Ionicons } from '@expo/vector-icons';
+import { useThemeColor } from "@/src/hooks/useThemeColor";
+import { Ionicons } from "@expo/vector-icons";
 
 export type ThemedInputProps = TextInputProps & {
   lightColor?: string;
   darkColor?: string;
-  type?: 'default' | 'outlined' | 'underline';
+  type?: "default" | "outlined" | "underline";
   isPassword?: boolean;
+  errorMessage?: string;
 };
 
 export function ThemedInput({
   style,
   lightColor,
   darkColor,
-  type = 'default',
+  type = "default",
   isPassword = false,
+  errorMessage = "",
   ...rest
 }: ThemedInputProps) {
   const [secureText, setSecureText] = useState(isPassword);
 
   const textColor = useThemeColor(
-    { light: lightColor ?? '#49454F', dark: darkColor ?? '#FFF' },
-    'text'
+    { light: lightColor ?? "#49454F", dark: darkColor ?? "#FFF" },
+    "text"
   );
 
   const borderColor = useThemeColor(
-    { light: '#49454F', dark: '#A3A3A3' },
-    'tint'
+    { light: "#49454F", dark: "#A3A3A3" },
+    "tint"
   );
 
   const backgroundColor = useThemeColor(
-    { light: '#F7F7F7', dark: '#121212' },
-    'background'
+    { light: "#F7F7F7", dark: "#121212" },
+    "background"
   );
 
   const containerStyle = [
     styles.container,
-    type === 'outlined' ? { borderColor, borderWidth: 1 } : null,
+    type === "outlined" ? { borderColor, borderWidth: 1 } : null,
   ];
 
   const inputStyle = [
     styles.inputBase,
     { color: textColor, backgroundColor },
-    type === 'underline' ? styles.underline : null,
+    type === "underline" ? styles.underline : null,
     style,
   ];
 
   return (
-    <View style={containerStyle}>
-      <TextInput
-        style={inputStyle}
-        placeholderTextColor={textColor}
-        secureTextEntry={isPassword ? secureText : false}
-        {...rest}
-      />
-      {isPassword && (
-        <TouchableOpacity onPress={() => setSecureText(!secureText)} style={styles.icon}>
-          <Ionicons name={secureText ? 'eye-off' : 'eye'} size={20} color={textColor} />
-        </TouchableOpacity>
-      )}
-    </View>
+    <>
+      <View style={containerStyle}>
+        <TextInput
+          style={inputStyle}
+          placeholderTextColor={textColor}
+          secureTextEntry={isPassword ? secureText : false}
+          {...rest}
+        />
+        {isPassword && (
+          <TouchableOpacity
+            onPress={() => setSecureText(!secureText)}
+            style={styles.icon}
+          >
+            <Ionicons
+              name={secureText ? "eye-off" : "eye"}
+              size={20}
+              color={textColor}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
+      <View>{errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}</View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '90%',
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
     borderRadius: 8,
     paddingHorizontal: 12,
-    height:50,
-    marginVertical:10
+    height: 50,
+    marginVertical: 10,
   },
 
   inputBase: {
@@ -90,5 +109,11 @@ const styles = StyleSheet.create({
 
   icon: {
     padding: 8,
+  },
+
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: 2,
   },
 });

@@ -1,6 +1,5 @@
-import { router, Tabs, useSegments } from "expo-router";
-import React, { useEffect } from "react";
-import { Alert, BackHandler, Platform } from "react-native";
+import { Tabs } from "expo-router";
+import { Platform } from "react-native";
 
 import { HapticTab } from "@/src/components/HapticTab";
 import TabBarBackground from "@/src/components/ui/TabBarBackground";
@@ -13,31 +12,6 @@ import { FontAwesome5 } from "@expo/vector-icons";
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const themeColors = Colors[colorScheme ?? "light"];
-  const segments = useSegments(); // Pega a rota atual
-
-  useEffect(() => {
-    const handleBackPress = () => {
-      if (segments.length === 1 && segments[0] !== "(auth)") {
-        // Se o usuário estiver na tab principal, mas não na tela de login
-        Alert.alert("Sair do aplicativo", "Deseja voltar para a tela de login?", [
-          { text: "Cancelar", style: "cancel" },
-          {
-            text: "Sim",
-            style: "destructive",
-            onPress: () => router.replace("/(auth)"),
-          },
-        ]);
-        return true; // Impede o comportamento padrão de fechar o app
-      }
-      return false; // Permite que o botão de voltar funcione normalmente
-    };
-
-    BackHandler.addEventListener("hardwareBackPress", handleBackPress);
-
-    return () => {
-      BackHandler.removeEventListener("hardwareBackPress", handleBackPress);
-    };
-  }, [router, segments]);
 
   return (
     <Tabs

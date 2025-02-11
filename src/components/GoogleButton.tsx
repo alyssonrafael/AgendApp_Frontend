@@ -22,7 +22,6 @@ export function GoogleButton() {
     // Simula uma requisição assíncrona (ex: API call)
     setTimeout(() => {
       setIsLoading(false); // Finaliza o carregamento após 2 segundos
-      router.replace('/(telasUsers)')
     }, 2000);
   };
 
@@ -51,9 +50,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 8,
-    margin: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
   },
   content: {
     flexDirection: 'row',

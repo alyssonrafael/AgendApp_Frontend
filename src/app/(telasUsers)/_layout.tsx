@@ -1,44 +1,15 @@
-import { useEffect } from "react";
-import { Tabs, router, useSegments } from "expo-router";
-import { Platform, BackHandler, Alert } from "react-native";
+import { Tabs, } from "expo-router";
+import { Platform } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 import { HapticTab } from "@/src/components/HapticTab";
 import TabBarBackground from "@/src/components/ui/TabBarBackground";
 import { useThemeColor } from "@/src/hooks/useThemeColor"; // Importando o hook
 
+
 export default function TabLayout() {
-  const segments = useSegments(); // Pega a rota atual
   const tabIconDefault = useThemeColor({}, "tabIconDefault");
   const tabIconSelected = useThemeColor({}, "tabIconSelected");
-
-  useEffect(() => {
-    const handleBackPress = () => {
-      if (segments.length === 1 && segments[0] !== "(auth)") {
-        Alert.alert(
-          "Sair do aplicativo",
-          "Deseja voltar para a tela de login?",
-          [
-            { text: "Cancelar", style: "cancel" },
-            {
-              text: "Sim",
-              style: "destructive",
-              onPress: () => router.replace("/(auth)"),
-            },
-          ]
-        );
-        return true;
-      }
-      return false;
-    };
-
-    BackHandler.addEventListener("hardwareBackPress", handleBackPress);
-
-    return () => {
-      BackHandler.removeEventListener("hardwareBackPress", handleBackPress);
-    };
-  }, [router, segments]);
-
   return (
     <Tabs
       screenOptions={{

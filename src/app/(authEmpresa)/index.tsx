@@ -60,7 +60,7 @@ export default function LoginEmpresaScreen() {
         <ThemedText
           type="link"
           style={styles.link}
-          onPress={() => router.replace("/(authEmpresa)/cadastro")}
+          onPress={() => router.push("/(authEmpresa)/cadastro")}
         >
           Registre-se agora
         </ThemedText>
