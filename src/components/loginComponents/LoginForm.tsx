@@ -143,6 +143,7 @@ export function LoginForm() {
         title="Login"
         onPress={handleSubmit(handleLogin)}
         isLoading={isLoading}
+        disabled={isLoading} 
       />
     </View>
   );

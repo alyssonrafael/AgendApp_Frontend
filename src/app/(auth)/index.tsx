@@ -7,10 +7,10 @@ import Animated, {
 } from "react-native-reanimated";
 import { ThemedView } from "@/src/components/ThemedView";
 import { ThemedText } from "@/src/components/ThemedText";
-import { GoogleButton } from "@/src/components/GoogleButton";
+import { GoogleButton } from "@/src/components/loginComponents/GoogleButton";
 import { router } from "expo-router";
 import { Logo } from "@/src/components/ThemedLogo";
-import { LoginForm } from "@/src/components/LoginForm";
+import { LoginForm } from "@/src/components/loginComponents/LoginForm";
 
 export default function LoginScreen() {
   const [showContent, setShowContent] = useState(false);

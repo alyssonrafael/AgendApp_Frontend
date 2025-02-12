@@ -8,10 +8,11 @@ import {
   View 
 } from 'react-native';
 import { useThemeColor } from '@/src/hooks/useThemeColor';
-import { router } from 'expo-router';
+import { useMessage } from '@/src/context/MessageContext';
 
 export function GoogleButton() {
   const [isLoading, setIsLoading] = useState(false);
+  const { showMessage } = useMessage();
 
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');
   const textColor = useThemeColor({ light: '#000', dark: '#FFF' }, 'text');
@@ -22,7 +23,8 @@ export function GoogleButton() {
     // Simula uma requisição assíncrona (ex: API call)
     setTimeout(() => {
       setIsLoading(false); // Finaliza o carregamento após 2 segundos
-    }, 2000);
+      showMessage('info',"Essa função ainda não funciona")
+    }, 3000);
   };
 
   return (
@@ -36,7 +38,7 @@ export function GoogleButton() {
         <ActivityIndicator size="small" color={textColor} />
       ) : (
         <View style={styles.content}>
-          <Image source={require('../assets/images/Googleimg.png')} style={styles.logo} />
+          <Image source={require('../../assets/images/Googleimg.png')} style={styles.logo} />
           <Text style={[styles.buttonText, { color: textColor }]}>Login com Google</Text>
         </View>
       )}

@@ -1,82 +1,56 @@
-import { StyleSheet, View } from "react-native";
-import React, { useState } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { ThemedView } from "@/src/components/ThemedView";
 import { ThemedText } from "@/src/components/ThemedText";
-import { ThemedInput } from "@/src/components/ThemedInput";
 import { router } from "expo-router";
-import { ThemedButton } from "@/src/components/ThemedButton";
-import { GoogleButton } from "@/src/components/GoogleButton";
+import { GoogleButton } from "@/src/components/loginComponents/GoogleButton";
 import { Logo } from "@/src/components/ThemedLogo";
-
+import CadastroForm from "@/src/components/loginComponents/CadastroForm";
 
 export default function CadastroScreen() {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handlePress = () => {
-    setIsLoading(true);
-
-    setTimeout(() => {
-      router.replace("/(auth)")
-      setIsLoading(false);
-    }, 2000);
-    alert("Ação concluída!");
-
-  };
-
-
   return (
     <ThemedView style={styles.container}>
-      <Logo/>
-      <View style={styles.containerText}>
-        <ThemedText type="title" lightColor="#007BFF" darkColor="#4A90E2">
-          Cadastre-se agora
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Logo />
+        <View style={styles.containerText}>
+          <ThemedText type="title" lightColor="#007BFF" darkColor="#4A90E2">
+            Cadastre-se agora
+          </ThemedText>
+          <ThemedText type="defaultSemiBold" style={{ textAlign: "center" }}>
+            Preencha os campos abaixo para o cadastro
+          </ThemedText>
+        </View>
+
+        <CadastroForm />
+
+        <ThemedText>
+          Já tem conta?{" "}
+          <ThemedText
+            type="link"
+            style={styles.link}
+            onPress={() => router.replace("/(auth)")}
+          >
+            Login
+          </ThemedText>
         </ThemedText>
-        <ThemedText type="defaultSemiBold" style={{ textAlign: "center" }}>
-          Preencha os campos abaixo para o cadastro
+
+        <ThemedText>
+          Empresa?{" "}
+          <ThemedText
+            type="link"
+            style={styles.link}
+            onPress={() => router.replace("/(authEmpresa)")}
+          >
+            Clique aqui
+          </ThemedText>
         </ThemedText>
-      </View>
 
-      <View>
-        <ThemedInput placeholder="Nome" type="outlined" />
-        <ThemedInput
-          placeholder="Email"
-          type="outlined"
-          keyboardType="email-address"
-        />
-        <ThemedInput placeholder="Senha" type="outlined" isPassword />
-      </View>
+        <ThemedText style={{ marginTop: 6 }}>OU</ThemedText>
 
-      <ThemedButton
-        title="Cadastre-se"
-        onPress={handlePress}
-        isLoading={isLoading}
-      />
-
-      <ThemedText>
-        Ja tem conta?{" "}
-        <ThemedText
-          type="link"
-          style={styles.link}
-          onPress={() => router.replace("/(auth)")}
-        >
-          Login
-        </ThemedText>
-      </ThemedText>
-
-      <ThemedText>
-        Empresa?{" "}
-        <ThemedText
-          type="link"
-          style={styles.link}
-          onPress={() => router.replace("/(authEmpresa)")}
-        >
-          Clique aqui
-        </ThemedText>
-      </ThemedText>
-
-      <ThemedText style={{ marginTop: 6 }}>OU</ThemedText>
-
-      <GoogleButton />
+        <GoogleButton />
+      </ScrollView>
     </ThemedView>
   );
 }
@@ -88,12 +62,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 20,
   },
-
-  formContainer: {
-    width: "100%",
-    alignItems: "center",
-  },
-
   containerText: {
     alignItems: "center",
     marginVertical: 40,
@@ -102,9 +70,10 @@ const styles = StyleSheet.create({
   link: {
     color: "#007BFF",
   },
-
-  esqueci: {
-    textAlign: "right",
-    textDecorationLine: "underline",
+  scrollContainer: {
+    flexGrow: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 30,
   },
 });
