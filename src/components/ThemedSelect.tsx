@@ -50,7 +50,7 @@ export function ThemedSelect({ options, selectedValue, onValueChange, lightColor
 
 const styles = StyleSheet.create({
   container: {
-    width: '90%',
+    width: '100%',
     borderRadius: 8,
     paddingHorizontal: 12,
     marginVertical: 10,
