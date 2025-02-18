@@ -1,7 +1,7 @@
 import { StyleSheet, View, ScrollView } from "react-native";
 import { ThemedText } from "@/src/components/ThemedText";
 import { ThemedView } from "@/src/components/ThemedView";
-import SessaoMudarTema from "@/src/components/maisOpcoesComponents/sessaoMudarTema";
+import SessaoMudarTema from "@/src/components/maisOpcoesComponents/SessaoMudarTema";
 import SessaoSobre from "@/src/components/maisOpcoesComponents/SessaoSobre";
 import SessaoCafezinho from "@/src/components/maisOpcoesComponents/SessaoCafezinho";
 import SessaoUsuario from "@/src/components/maisOpcoesComponents/SessaoUsuario";
