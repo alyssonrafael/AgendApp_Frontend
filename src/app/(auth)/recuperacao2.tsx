@@ -20,6 +20,7 @@ export default function Recuperacao2Screen() {
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
           <Logo />
           <View style={styles.containerText}>

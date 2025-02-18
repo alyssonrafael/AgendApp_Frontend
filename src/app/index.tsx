@@ -1,4 +1,4 @@
-import { Text, StyleSheet, View, Image, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemedView } from '@/src/components/ThemedView';
@@ -36,6 +36,7 @@ export default function IndexScreen() {
   if (isFirstTime === null) return null; // Evita piscar a tela enquanto carrega
 
   return (
+    <>
     <ThemedView style={styles.container}>
       <Image source={logoImage} />
       <ThemedText type="title">Seja bem-vindo</ThemedText>
@@ -46,6 +47,7 @@ export default function IndexScreen() {
         <Text style={styles.buttonText}>Comece agora</Text>
       </TouchableOpacity>
     </ThemedView>
+    </>
   );
 }
 

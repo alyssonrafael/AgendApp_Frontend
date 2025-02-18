@@ -27,7 +27,7 @@ export default function LoginScreen() {
         translateY.value = withTiming(0, { duration: 800 });
         opacity.value = withTiming(1, { duration: 800 });
       }
-    }, 1000);
+    }, 2000);
 
     return () => {
       isMounted = false; // Evita a animação em um componente desmontado
@@ -49,6 +49,7 @@ export default function LoginScreen() {
             color="#007BFF"
             style={{ marginTop: 60 }}
           />
+          <ThemedText style={styles.textInicio}>Preparando o seu App...</ThemedText>
         </View>
       ) : (
         <Animated.View style={formAnimatedStyle}>
@@ -87,6 +88,9 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
+  textInicio:{
+    fontSize:10
+  },
   container: {
     flex: 1,
     alignItems: "center",

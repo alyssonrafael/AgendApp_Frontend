@@ -1,7 +1,11 @@
+import CustomStatusBar from "@/src/components/CustomStatusBar";
 import { Stack } from "expo-router";
 
 export default function AuthLayout() {
   return (
-    <Stack screenOptions={{ headerShown: false }} />
+    <>
+      <CustomStatusBar />
+      <Stack screenOptions={{ headerShown: false }} />
+    </>
   );
 }

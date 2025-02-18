@@ -12,6 +12,7 @@ export default function CadastroScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
         <Logo />
         <View style={styles.containerText}>

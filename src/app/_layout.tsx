@@ -1,25 +1,18 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { router, Stack, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
-import { useColorScheme } from "@/src/hooks/useColorScheme";
 import { Alert, BackHandler } from "react-native";
 import { MessageProvider } from "../context/MessageContext";
+import { ThemeProviderWrapper } from "../context/ThemeContext";
 
 // Impede que a splash screen esconda antes do carregamento dos assets
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -91,9 +84,8 @@ export default function RootLayout() {
   }
 
   return (
-    // provider que controla as mensagens de feedback para serem exibidas globalmente
-    <MessageProvider>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    <ThemeProviderWrapper>
+      <MessageProvider>
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="(telasUsers)" options={{ headerShown: false }} />
@@ -105,8 +97,7 @@ export default function RootLayout() {
           <Stack.Screen name="(authEmpresa)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </MessageProvider>
+      </MessageProvider>
+    </ThemeProviderWrapper>
   );
 }

@@ -5,12 +5,15 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { HapticTab } from "@/src/components/HapticTab";
 import TabBarBackground from "@/src/components/ui/TabBarBackground";
 import { useThemeColor } from "@/src/hooks/useThemeColor"; // Importando o hook
+import CustomStatusBar from "@/src/components/CustomStatusBar";
 
 
 export default function TabLayout() {
   const tabIconDefault = useThemeColor({}, "tabIconDefault");
   const tabIconSelected = useThemeColor({}, "tabIconSelected");
   return (
+    <>
+    <CustomStatusBar />
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: tabIconSelected,
@@ -77,5 +80,6 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </>
   );
 }

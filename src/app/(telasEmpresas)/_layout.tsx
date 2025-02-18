@@ -8,55 +8,59 @@ import { useColorScheme } from "@/src/hooks/useColorScheme";
 import Octicons from "@expo/vector-icons/Octicons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { FontAwesome5 } from "@expo/vector-icons";
+import CustomStatusBar from "../../components/CustomStatusBar";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const themeColors = Colors[colorScheme ?? "light"];
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: themeColors.tabIconSelected,
-        tabBarInactiveTintColor: themeColors.tabIconDefault,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            position: "absolute",
-          },
-          default: {},
-        }),
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Dashboard",
+    <>
+      <CustomStatusBar />
+      <Tabs
+        screenOptions={{
+          tabBarActiveTintColor: themeColors.tabIconSelected,
+          tabBarInactiveTintColor: themeColors.tabIconDefault,
+          headerShown: false,
+          tabBarButton: HapticTab,
+          tabBarBackground: TabBarBackground,
+          tabBarStyle: Platform.select({
+            ios: {
+              position: "absolute",
+            },
+            default: {},
+          }),
+        }}
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: "Dashboard",
           tabBarIcon: ({ color }) => <Octicons size={28} name="graph" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="servicos"
-        options={{
-          title: "Serviços",
+          }}
+        />
+        <Tabs.Screen
+          name="servicos"
+          options={{
+            title: "Serviços",
           tabBarIcon: ({ color }) => <AntDesign size={28} name="pluscircle" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="reservas"
-        options={{
-          title: "Reservas",
+          }}
+        />
+        <Tabs.Screen
+          name="reservas"
+          options={{
+            title: "Reservas",
           tabBarIcon: ({ color }) => <Octicons size={28} name="briefcase" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="(maisOpcoes)"
-        options={{
-          title: "Mais opções",
+          }}
+        />
+        <Tabs.Screen
+          name="(maisOpcoes)"
+          options={{
+            title: "Mais opções",
           tabBarIcon: ({ color }) => <FontAwesome5 size={28} name="align-justify" color={color} />,
-        }}
-      />
-    </Tabs>
+          }}
+        />
+      </Tabs>
+    </>
   );
 }

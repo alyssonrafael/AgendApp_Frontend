@@ -1,8 +1,11 @@
-// app/(authEmpresa)/_layout.tsx
-import { Stack } from 'expo-router';
+import { Stack } from "expo-router";
+import CustomStatusBar from "../../components/CustomStatusBar";
 
 export default function Layout() {
   return (
-    <Stack screenOptions={{ headerShown: false }} />
+    <>
+      <CustomStatusBar />
+      <Stack screenOptions={{ headerShown: false }} />
+    </>
   );
 }
