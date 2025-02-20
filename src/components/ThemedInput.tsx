@@ -14,7 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 export type ThemedInputProps = TextInputProps & {
   lightColor?: string;
   darkColor?: string;
-  type?: "default" | "outlined" | "underline";
+  type?: "default" | "outlined" | "underline" | "big";
   isPassword?: boolean;
   errorMessage?: string;
 };
@@ -48,6 +48,7 @@ export function ThemedInput({
   const containerStyle = [
     styles.container,
     type === "outlined" ? { borderColor, borderWidth: 1 } : null,
+    type === "big" ? [styles.big, { borderColor, borderWidth: 1 }] : null,
   ];
 
   const inputStyle = [
@@ -79,7 +80,9 @@ export function ThemedInput({
           </TouchableOpacity>
         )}
       </View>
-      <View>{errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}</View>
+      <View>
+        {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
+      </View>
     </>
   );
 }
@@ -107,12 +110,21 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
   },
 
+  big: {
+    fontSize: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    height: "auto",
+    maxHeight: 200,
+  },
+
   icon: {
     padding: 8,
   },
 
   errorText: {
-    color: 'red',
+    color: "red",
     fontSize: 12,
     marginTop: 2,
   },

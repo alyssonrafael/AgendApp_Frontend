@@ -6,6 +6,7 @@ import { HapticTab } from "@/src/components/HapticTab";
 import TabBarBackground from "@/src/components/ui/TabBarBackground";
 import { useThemeColor } from "@/src/hooks/useThemeColor"; // Importando o hook
 import CustomStatusBar from "@/src/components/CustomStatusBar";
+import { UserProvider } from "@/src/context/UserContext";
 
 
 export default function TabLayout() {
@@ -13,6 +14,7 @@ export default function TabLayout() {
   const tabIconSelected = useThemeColor({}, "tabIconSelected");
   return (
     <>
+    <UserProvider>
     <CustomStatusBar />
     <Tabs
       screenOptions={{
@@ -80,6 +82,7 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </UserProvider>
     </>
   );
 }

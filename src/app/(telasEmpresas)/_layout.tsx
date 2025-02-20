@@ -9,6 +9,7 @@ import Octicons from "@expo/vector-icons/Octicons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { FontAwesome5 } from "@expo/vector-icons";
 import CustomStatusBar from "../../components/CustomStatusBar";
+import { EmpresaProvider } from "@/src/context/EmpresaContext";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -16,6 +17,7 @@ export default function TabLayout() {
 
   return (
     <>
+    <EmpresaProvider>
       <CustomStatusBar />
       <Tabs
         screenOptions={{
@@ -61,6 +63,7 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
+      </EmpresaProvider>
     </>
   );
 }

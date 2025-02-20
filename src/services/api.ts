@@ -9,4 +9,6 @@ const api = axios.create({
   },
 });
 
+//atualize pelo ip onde seu backend esta fornecendo a pasta uploads
+export const apiImages = "http://10.0.0.20:3333/uploads/";
 export default api;

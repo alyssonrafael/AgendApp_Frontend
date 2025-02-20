@@ -43,9 +43,6 @@ export function LoginEmpresaForm() {
 
         switch (status) {
           case 400:
-            showMessage("alert", "Requisição inválida.");
-            break;
-          case 401:
             showMessage("danger", "Usuário ou senha incorretos.");
             break;
           case 403:
