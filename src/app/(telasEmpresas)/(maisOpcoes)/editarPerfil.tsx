@@ -85,13 +85,15 @@ export default function EditarEmpresa() {
   // Função para salvar as alterações
   const handleSave = async (data: FormData) => {
     // Verificação inicial para alterações
-    if (
-      data.nomeEmpresa === empresa?.nomeEmpresa &&
-      data.description === empresa?.description &&
-      !data.password?.trim() &&
-      !data.newPassword?.trim() &&
-      !data.confirmNewPassword?.trim()
-    ) {
+    const isNomeEmpresaChanged = data.nomeEmpresa !== empresa?.nomeEmpresa;
+    const isDescriptionChanged = data.description !== empresa?.description;
+    const isPasswordChanged =
+      data.password?.trim() ||
+      data.newPassword?.trim() ||
+      data.confirmNewPassword?.trim();
+  
+    // Se nenhum campo foi alterado, exibe a mensagem e retorna
+    if (!isNomeEmpresaChanged && !isDescriptionChanged && !isPasswordChanged) {
       showMessage("info", "Nenhuma alteração foi feita.");
       return;
     }
@@ -116,39 +118,44 @@ export default function EditarEmpresa() {
     }
 
     try {
-      let passwordUpdated = false;
+      const updatedFields: string[] = []; // Array para armazenar os campos atualizados
+  
+      // Atualiza a senha, se password e newpassword for informado
       if (data.password && data.newPassword) {
-        passwordUpdated = await updateEmpresaPassword(
+        const passwordUpdated = await updateEmpresaPassword(
           data.password,
           data.newPassword
-        ); // Atualiza a senha, se passwor e newpassword for informado
+        );
+        if (passwordUpdated) {
+          updatedFields.push("Senha");
+        }
       }
-
-      let nomeEmpresaUpdated = false;
-      let descriptionUpdated = false;
-
+  
       // Atualiza o nome da empresa se houve alteração
-      if (data.nomeEmpresa && data.nomeEmpresa !== empresa?.nomeEmpresa) {
-        nomeEmpresaUpdated = await updateEmpresaName(data.nomeEmpresa);
+      if (isNomeEmpresaChanged && data.nomeEmpresa) {
+        const nomeEmpresaUpdated = await updateEmpresaName(data.nomeEmpresa);
+        if (nomeEmpresaUpdated) {
+          updatedFields.push("Nome da empresa");
+        }
       }
-
-      // Atualiza a descrição se houve alteração
-      if (data.description !== empresa?.description) {
-        descriptionUpdated = await updateDescription(data.description || "");
+  
+      // Atualiza a descrição se houve alteração e se a descrição não estiver vazia
+      if (isDescriptionChanged && data.description?.trim()) {
+        const descriptionUpdated = await updateDescription(data.description);
+        if (descriptionUpdated) {
+          updatedFields.push("Descrição");
+        }
       }
-
-      // Exibe as mensagens de sucesso baseadas nas atualizações realizadas
-      if (nomeEmpresaUpdated && passwordUpdated) {
+  
+      // Exibe a mensagem de sucesso com base nos campos atualizados
+      if (updatedFields.length > 0) {
+        const camposAtualizados = updatedFields.join(", "); // Junta os campos em uma string
         showMessage(
           "success",
-          "Nome da empresa e senha atualizados com sucesso!"
+          `Os seguintes campos foram atualizados com sucesso: ${camposAtualizados}.`
         );
-      } else if (nomeEmpresaUpdated) {
-        showMessage("success", "Nome da empresa atualizado com sucesso!");
-      } else if (passwordUpdated) {
-        showMessage("success", "Senha atualizada com sucesso!");
-      } else if (descriptionUpdated) {
-        showMessage("success", "Descrição atualizada com sucesso!");
+      } else {
+        showMessage("info", "Nenhuma alteração foi feita.");
       }
 
       // Reseta o formulário com os novos dados
@@ -160,9 +167,11 @@ export default function EditarEmpresa() {
         confirmNewPassword: "",
       });
     } catch (error: any) {
-      // Tratamento de erro específico para senha incorreta
-      if (error.message === "Senha atual incorreta.") {
-        showMessage("danger", "Senha atual incorreta! Nenhum dado alterado!");
+      // Tratamento de erros específicos que vem do contexto
+      if (error.message === "Nome da empresa já existe.") {
+        showMessage("danger", "Nome da empresa já existe. Escolha outro nome. Nenhum campo atualizado");
+      } else if (error.message === "Senha atual incorreta.") {
+        showMessage("danger", "Senha atual incorreta! Nenhum dado alterado! Nenhum campo atualizado");
       } else {
         showMessage(
           "danger",
@@ -171,7 +180,6 @@ export default function EditarEmpresa() {
       }
     }
   };
-
   // se loading exibe o indicativo
   if (loading) {
     return (

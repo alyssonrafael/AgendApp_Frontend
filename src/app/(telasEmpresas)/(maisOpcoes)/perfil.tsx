@@ -110,7 +110,9 @@ export default function Perfil() {
                 nestedScrollEnabled={true}
                 showsVerticalScrollIndicator={true}
               >
-                <ThemedText>{empresa.description}</ThemedText>
+                <ThemedText>
+                {empresa?.description || "Descrição ainda não atualizada."}
+                </ThemedText>
               </ScrollView>
             </View>
             <View>

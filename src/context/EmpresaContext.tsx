@@ -53,9 +53,9 @@ export const EmpresaProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Função para atualizar o nome da empresa.
   const updateEmpresaName = async (nomeEmpresa: string): Promise<boolean> => {
     // Verifica se a empresa está definida.
-    if (!empresa) return false;  
+    if (!empresa) return false;
     try {
-      const token = await AsyncStorage.getItem("userToken");  
+      const token = await AsyncStorage.getItem("userToken");
       if (!token) return false;
       // Fazendo a requisição para atualizar o nome da empresa.
       await api.put(
@@ -63,12 +63,15 @@ export const EmpresaProvider: React.FC<{ children: React.ReactNode }> = ({ child
         { nomeEmpresa },
         { headers: { Authorization: `${token}` } }
       );
-
-      setEmpresa((prev) => (prev ? { ...prev, nomeEmpresa } : null));  // Atualiza o estado com o novo nome da empresa.
-      return true;  // Retorna verdadeiro se a atualização for bem-sucedida.
-    } catch (error) {
-      console.error("Erro ao atualizar nome da empresa:", error);
-      return false;  // Retorna falso em caso de erro.
+  
+      setEmpresa((prev) => (prev ? { ...prev, nomeEmpresa } : null));
+      return true;
+    } catch (error: any) {
+      if (error.response?.status === 409) {
+        throw new Error("Nome da empresa já existe."); // Erro específico para nome duplicado
+      } else {
+        throw new Error("Erro ao atualizar nome da empresa."); // Outros erros
+      }
     }
   };
   
@@ -87,8 +90,7 @@ export const EmpresaProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setEmpresa((prev) => (prev ? { ...prev, description } : null));  // Atualiza o estado com a nova descrição.
       return true;
     } catch (error) {
-      console.error("Erro ao atualizar descrição:", error);  
-      return false;  // Retorna falso em caso de erro.
+      throw new Error("Erro ao atualizar descrição."); // Erro genérico 
     }
   };
 
