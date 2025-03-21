@@ -1,4 +1,4 @@
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { ThemedText } from "@/src/components/ThemedText";
@@ -13,12 +13,19 @@ interface FormData {
   name?: string;
   password?: string;
   newPassword?: string;
+  phoneNumber?: string;
   confirmNewPassword?: string;
 }
 
 export default function EditarPerfil() {
   // pega as informaçoes do usuário e as funções de atualização do contexto
-  const { user, loading, updateUserName, updateUserPassword } = useUser();
+  const {
+    user,
+    loading,
+    updateUserName,
+    updateUserPassword,
+    updateUserPhoneNumber,
+  } = useUser();
   const { showMessage } = useMessage();
 
   // Configuração do formulário usando react-hook-form
@@ -31,6 +38,7 @@ export default function EditarPerfil() {
   } = useForm<FormData>({
     defaultValues: {
       name: user?.name || "", // Inicializa o campo de nome com o nome atual do usuário
+      phoneNumber: user?.phoneNumber || "", // Inicializa o campo de telefone com o telefone atual do usuário
       password: "",
       newPassword: "",
       confirmNewPassword: "",
@@ -44,7 +52,8 @@ export default function EditarPerfil() {
       data.name === user?.name &&
       !data.password?.trim() &&
       !data.newPassword?.trim() &&
-      !data.confirmNewPassword?.trim()
+      !data.confirmNewPassword?.trim() &&
+      !data.phoneNumber?.trim()
     ) {
       showMessage("info", "Nenhuma alteração foi feita.");
       return;
@@ -70,34 +79,43 @@ export default function EditarPerfil() {
     }
 
     try {
-      let nameUpdated = false;
-      let passwordUpdated = false;
+      const updatedFields: string[] = []; // Array para armazenar os campos atualizados
 
       // Atualiza o nome, se tiver sido alterado
       if (data.name && data.name !== user?.name) {
-        nameUpdated = await updateUserName(data.name);
+       const nameUpdated = await updateUserName(data.name);
+        if (nameUpdated) updatedFields.push("nome");
+      }
+      
+      //atualiza o telefone, se informado
+      if (data.phoneNumber && data.phoneNumber !== user?.phoneNumber) {
+       const phoneNumberUpdated = await updateUserPhoneNumber(data.phoneNumber);
+        if (phoneNumberUpdated) updatedFields.push("telefone");
       }
 
       // Atualiza a senha, se informada
       if (data.password && data.newPassword) {
-        passwordUpdated = await updateUserPassword(
+        const passwordUpdated = await updateUserPassword(
           data.password,
           data.newPassword
         );
+        if (passwordUpdated) updatedFields.push("senha");
       }
-
-      // Exibe mensagens de sucesso conforme o que foi alterado
-      if (nameUpdated && passwordUpdated) {
-        showMessage("success", "Nome e senha atualizados com sucesso!");
-      } else if (nameUpdated) {
-        showMessage("success", "Nome atualizado com sucesso!");
-      } else if (passwordUpdated) {
-        showMessage("success", "Senha atualizada com sucesso!");
+      // Exibe a mensagem de sucesso com base nos campos atualizados
+      if (updatedFields.length > 0) {
+        const camposAtualizados = updatedFields.join(", "); // Junta os campos em uma string
+        showMessage(
+          "success",
+          `Os seguintes campos foram atualizados com sucesso: ${camposAtualizados}.`
+        );
+      } else {
+        showMessage("info", "Nenhuma alteração foi feita.");
       }
 
       // Reseta o formulário, mantendo o nome atualizado
       reset({
         name: data.name,
+        phoneNumber: data.phoneNumber,
         password: "",
         newPassword: "",
         confirmNewPassword: "",
@@ -129,19 +147,11 @@ export default function EditarPerfil() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText
-        type="subtitle"
-        style={{ marginBottom: 10, textAlign: "center" }}
+      <ScrollView
+              contentContainerStyle={styles.scrollContainer}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
       >
-        Atualização de Dados
-      </ThemedText>
-      <ThemedText
-        type="defaultSemiBold"
-        style={{ marginBottom: 20, textAlign: "center", paddingHorizontal: 20 }}
-      >
-        É possivel alterar apenas o nome, apenas a senha, ou ambos.
-      </ThemedText>
-
       <View style={{ width: "100%" }}>
         {/* Campo para alterar o nome */}
         <ThemedText style={styles.label}>Alterar Nome</ThemedText>
@@ -163,6 +173,41 @@ export default function EditarPerfil() {
               onBlur={onBlur}
               autoCapitalize="words"
               errorMessage={errors.name?.message}
+            />
+          )}
+        />
+        </View>
+      <View style={{ width: "100%" }}>
+        {/* Campo para alterar o telefone */}
+        <ThemedText style={styles.label}>Alterar Número</ThemedText>
+        <Controller
+          control={control}
+          name="phoneNumber"
+          rules={{
+            required: "O número de telefone é obrigatório",
+            minLength: {
+              value: 10,
+              message: "O número deve ter no mínimo 10 dígitos",
+            },
+            maxLength: {
+              value: 15,
+              message: "O número deve ter no máximo 15 dígitos",
+            },
+            pattern: {
+              value: /^\+?\d{10,15}$/,
+              message: "Número inválido. Apenas números, com opcional '+'.",
+            },
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <ThemedInput
+              value={value}
+              type="outlined"
+              placeholder="Digite seu novo telefone"
+              onChangeText={onChange}
+              onBlur={onBlur}
+              keyboardType="phone-pad"
+              autoCapitalize="none"
+              errorMessage={errors.phoneNumber?.message}
             />
           )}
         />
@@ -237,6 +282,7 @@ export default function EditarPerfil() {
         onPress={handleSubmit(handleSave)}
         isLoading={isSubmitting}
       />
+      </ScrollView>
     </ThemedView>
   );
 }
@@ -246,6 +292,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: 20,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    alignItems: "flex-start",
+    padding: 20,
   },
   containerloading: {
     flex: 1,

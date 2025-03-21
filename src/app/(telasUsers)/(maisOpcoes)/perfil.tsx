@@ -61,6 +61,7 @@ export default function Perfil() {
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
         <Animated.View
           style={[
@@ -86,6 +87,15 @@ export default function Perfil() {
             </View>
             <View>
               <ThemedText type="subtitle" style={styles.label}>
+                Número:
+              </ThemedText>
+              <ThemedText style={[user?.phoneNumber ? {} : { color: "red" }]}>
+                {user?.phoneNumber ||
+                  "Número não informado, atualize agora mesmo seu perfil"}
+              </ThemedText>
+            </View>
+            <View>
+              <ThemedText type="subtitle" style={styles.label}>
                 Criado em:
               </ThemedText>
               <ThemedText>
@@ -96,7 +106,9 @@ export default function Perfil() {
               <ThemedText type="subtitle" style={styles.label}>
                 Total de agendamentos
               </ThemedText>
-              <ThemedText>Rota a ser implementada</ThemedText>
+              <ThemedText style={{ color: "#007AFF" }}>
+                Rota a ser implementada
+              </ThemedText>
             </View>
             <View>
               <ThemedText type="subtitle" style={styles.label}>

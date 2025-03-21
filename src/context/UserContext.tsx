@@ -5,6 +5,7 @@ import api from "@/src/services/api";
 interface User {
   name: string;
   email: string;
+  phoneNumber: string;
   createdAt: string;
 }
 
@@ -14,6 +15,7 @@ interface UserContextType {
   loading: boolean;                          // Indica se os dados do usuário estão carregando
   fetchUserData: () => Promise<void>;         // Função para buscar os dados do usuário
   updateUserName: (name: string) => Promise<boolean>; // Função para atualizar o nome do usuário
+  updateUserPhoneNumber: (phoneNumber: string) => Promise<boolean>; // Função para atualizar o telefone do usuário
   updateUserPassword: (password: string, newPassword: string) => Promise<boolean>; // Função para atualizar a senha do usuário
 }
 
@@ -71,6 +73,28 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return false;
     }
   };
+  // Função para atualizar o telefone do usuário
+  const updateUserPhoneNumber = async (phoneNumber: string): Promise<boolean> => {
+    // Se não  existir usuário retorna false
+    if (!user) return false;
+    try {
+      // Obtém o token de autenticação do AsyncStorage
+      const token = await AsyncStorage.getItem("userToken");
+      if (!token) return false;
+      // Faz a requisição para atualizar o telefone do usuário
+      await api.put(
+        "/update/user",
+        { phoneNumber },
+        { headers: { Authorization: `${token}` } }
+      );
+      // Atualiza o telefone do usuário no estado
+      setUser((prev) => (prev ? { ...prev, phoneNumber } : null));
+      return true;  // Retorna true indicando sucesso
+    } catch (error) {
+      console.error("Erro ao atualizar telefone:", error);
+      return false;
+    }
+  };
 
   // Função para atualizar a senha do usuário
   const updateUserPassword = async (password: string, newPassword: string): Promise<boolean> => {
@@ -105,7 +129,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     // Prove o contexto para os componentes filhos
-    <UserContext.Provider value={{ user, loading, fetchUserData, updateUserName, updateUserPassword }}>
+    <UserContext.Provider value={{ user, loading, fetchUserData, updateUserPhoneNumber, updateUserName, updateUserPassword }}>
       {children}
     </UserContext.Provider>
   );
