@@ -6,6 +6,8 @@ interface Empresa {
   nomeEmpresa: string;
   name: string;
   description: string;
+  phoneNumber: string;
+  address: string;
   image: string;
   email: string;
   createdAt: string;
@@ -17,6 +19,8 @@ interface EmpresaContextType {
   fetchEmpresaData: () => Promise<void>;
   updateEmpresaName: (nomeEmpresa: string) => Promise<boolean>;
   updateDescription: (description: string) => Promise<boolean>;
+  updatePhoneNumber: (phoneNumber: string) => Promise<boolean>;
+  updateAddress: (address: string) => Promise<boolean>;
   updateImage: (image: string) => Promise<boolean>;
   updateEmpresaPassword: (password: string, newPassword: string) => Promise<boolean>;
 }
@@ -93,6 +97,43 @@ export const EmpresaProvider: React.FC<{ children: React.ReactNode }> = ({ child
       throw new Error("Erro ao atualizar descrição."); // Erro genérico 
     }
   };
+  // Função para atualizar a descrição da empresa.
+  const updatePhoneNumber = async (phoneNumber: string): Promise<boolean> => {
+    if (!empresa) return false;  
+    try {
+      const token = await AsyncStorage.getItem("userToken");  
+      if (!token) return false;
+      // Fazendo a requisição para atualizar o telefone da empresa.
+      await api.put(
+        "/update/company",
+        { phoneNumber },
+        { headers: { Authorization: `${token}` } }
+      );
+      setEmpresa((prev) => (prev ? { ...prev, phoneNumber } : null));  // Atualiza o estado com o novo telefone.
+      return true;
+    } catch (error) {
+      throw new Error("Erro ao atualizar telefone."); // Erro genérico 
+    }
+  };
+  
+  // Função para atualizar o endereço da empresa.
+  const updateAddress = async (address: string): Promise<boolean> => {
+    if (!empresa) return false;  
+    try {
+      const token = await AsyncStorage.getItem("userToken");  
+      if (!token) return false;
+      // Fazendo a requisição para atualizar o endereço da empresa.
+      await api.put(
+        "/update/company",
+        { address },
+        { headers: { Authorization: `${token}` } }
+      );
+      setEmpresa((prev) => (prev ? { ...prev, address } : null));  // Atualiza o estado com o novo endereço.
+      return true;
+    } catch (error) {
+      throw new Error("Erro ao atualizar Endereço."); // Erro genérico 
+    }
+  };
 
   // Função para atualizar a imagem da empresa.
   const updateImage = async (imageUri: string): Promise<boolean> => {
@@ -154,6 +195,8 @@ export const EmpresaProvider: React.FC<{ children: React.ReactNode }> = ({ child
       fetchEmpresaData,  // Função para buscar os dados da empresa.
       updateEmpresaName,  // Função para atualizar o nome da empresa.
       updateDescription,  // Função para atualizar a descrição da empresa.
+      updatePhoneNumber, // Função para atualizar o telefone da empresa.
+      updateAddress,  // Função para atualizar o endereço da empresa.
       updateImage,  // Função para atualizar a imagem da empresa.
       updateEmpresaPassword,  // Função para atualizar a senha da empresa.
     }}>

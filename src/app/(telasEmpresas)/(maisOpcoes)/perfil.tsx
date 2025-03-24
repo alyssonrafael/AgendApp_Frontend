@@ -110,10 +110,33 @@ export default function Perfil() {
                 nestedScrollEnabled={true}
                 showsVerticalScrollIndicator={true}
               >
-                <ThemedText>
-                {empresa?.description || "Descrição ainda não atualizada."}
-                </ThemedText>
+              <ThemedText
+                style={[empresa?.description ? {} : { color: "red" }]}
+              >
+                {empresa?.description ||
+                  "Descrição não informada, atualize agora mesmo seu perfil"}
+              </ThemedText>
               </ScrollView>
+            </View>
+            <View>
+              <ThemedText type="subtitle" style={styles.label}>
+                Telefone:
+              </ThemedText>
+              <ThemedText
+                style={[empresa?.phoneNumber ? {} : { color: "red" }]}
+              >
+                {empresa?.phoneNumber ||
+                  "Telefone não informado, atualize agora mesmo seu perfil"}
+              </ThemedText>
+            </View>
+            <View>
+              <ThemedText type="subtitle" style={styles.label}>
+                Endereço:
+              </ThemedText>
+              <ThemedText style={[empresa?.address ? {} : { color: "red" }]}>
+                {empresa?.address ||
+                  "Endereço não informado, atualize agora mesmo seu perfil"}
+              </ThemedText>
             </View>
             <View>
               <ThemedText type="subtitle" style={styles.label}>

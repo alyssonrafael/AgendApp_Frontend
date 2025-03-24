@@ -23,6 +23,8 @@ interface FormData {
   // Definição da interface para os dados do formulário
   nomeEmpresa?: string;
   description?: string;
+  phoneNumber?: string;
+  address?: string;
   image?: string;
   password?: string;
   newPassword?: string;
@@ -57,6 +59,8 @@ export default function EditarEmpresa() {
     empresa, // Dados da empresa
     updateEmpresaName, // Função para atualizar o nome da empresa
     updateDescription, // Função para atualizar a descrição
+    updatePhoneNumber, // Função para atualizar o telefone
+    updateAddress, // Função para atualizar o endereço 
     updateImage, // Função para atualizar a imagem
     updateEmpresaPassword, // Função para atualizar a senha
     loading, // Estado de carregamento
@@ -75,6 +79,8 @@ export default function EditarEmpresa() {
     defaultValues: {
       nomeEmpresa: empresa?.nomeEmpresa || "",
       description: empresa?.description || "",
+      phoneNumber: empresa?.phoneNumber || "",
+      address: empresa?.address || "",
       image: empresa?.image || "",
       password: "",
       newPassword: "",
@@ -84,20 +90,19 @@ export default function EditarEmpresa() {
 
   // Função para salvar as alterações
   const handleSave = async (data: FormData) => {
-    // Verificação inicial para alterações
-    const isNomeEmpresaChanged = data.nomeEmpresa !== empresa?.nomeEmpresa;
-    const isDescriptionChanged = data.description !== empresa?.description;
-    const isPasswordChanged =
-      data.password?.trim() ||
-      data.newPassword?.trim() ||
-      data.confirmNewPassword?.trim();
-  
-    // Se nenhum campo foi alterado, exibe a mensagem e retorna
-    if (!isNomeEmpresaChanged && !isDescriptionChanged && !isPasswordChanged) {
+
+    if(
+      data.nomeEmpresa === empresa?.nomeEmpresa &&
+      !data.password?.trim() &&
+      !data.confirmNewPassword?.trim() &&
+      !data.phoneNumber?.trim() &&
+      !data.address?.trim() &&
+      !data.description?.trim()
+    ){
       showMessage("info", "Nenhuma alteração foi feita.");
       return;
     }
-
+  
     // Validações de senha
     if (data.password && !data.newPassword) {
       showMessage("alert", "Preencha a nova senha!");
@@ -126,25 +131,31 @@ export default function EditarEmpresa() {
           data.password,
           data.newPassword
         );
-        if (passwordUpdated) {
-          updatedFields.push("Senha");
-        }
+        if (passwordUpdated) updatedFields.push("Senha");
       }
   
       // Atualiza o nome da empresa se houve alteração
-      if (isNomeEmpresaChanged && data.nomeEmpresa) {
+      if (data.nomeEmpresa && data.nomeEmpresa !== empresa?.nomeEmpresa) {
         const nomeEmpresaUpdated = await updateEmpresaName(data.nomeEmpresa);
-        if (nomeEmpresaUpdated) {
-          updatedFields.push("Nome da empresa");
-        }
+        if (nomeEmpresaUpdated) updatedFields.push("Nome empresa")
       }
   
       // Atualiza a descrição se houve alteração e se a descrição não estiver vazia
-      if (isDescriptionChanged && data.description?.trim()) {
+      if (data.description && data.description !== empresa?.description) {
         const descriptionUpdated = await updateDescription(data.description);
-        if (descriptionUpdated) {
-          updatedFields.push("Descrição");
-        }
+        if (descriptionUpdated) updatedFields.push("Descrição");
+      }
+
+      // Atualiza o telefone se houve alteração e se a telefone não estiver vazio
+      if (data.phoneNumber && data.phoneNumber !== empresa?.phoneNumber) {
+        const phoneNumberUpdated = await updatePhoneNumber(data.phoneNumber);
+        if (phoneNumberUpdated) updatedFields.push("Telefone");
+      }
+
+      // Atualiza o endereço se houve alteração e se o endereço não estiver vazio
+      if (data.address && data.address !== empresa?.address) {
+        const addressUpdated = await updateAddress(data.address);
+        if (addressUpdated) updatedFields.push("Endereço");
       }
   
       // Exibe a mensagem de sucesso com base nos campos atualizados
@@ -162,6 +173,8 @@ export default function EditarEmpresa() {
       reset({
         nomeEmpresa: data.nomeEmpresa,
         description: data.description,
+        phoneNumber: data.phoneNumber,
+        address: data.address,
         password: "",
         newPassword: "",
         confirmNewPassword: "",
@@ -273,6 +286,17 @@ export default function EditarEmpresa() {
           <Controller
             control={control}
             name="description"
+            rules={{
+              required: "A descrição é obrigatória desde a primeira alteração de dados.",
+              maxLength:{
+                value:500,
+                message:"O número máximo de caracteres para descrição e de 500!"
+              },
+              minLength:{
+                value: 10,
+                message:"O número mínimo de caracteres para descrição e de 10!"
+              }
+            }}
             render={({ field: { onChange, onBlur, value } }) => (
               <ThemedInput
                 value={value}
@@ -282,6 +306,68 @@ export default function EditarEmpresa() {
                 onBlur={onBlur}
                 multiline
                 textAlignVertical="top"
+                errorMessage={errors.description?.message}
+              />
+            )}
+          />
+
+          {/* input com a telefone da empresa */}
+          <ThemedText style={styles.label}>Telefone da Empresa</ThemedText>
+          <Controller
+            control={control}
+            name="phoneNumber"
+            rules={{
+              required: "O número de telefone é obrigatório desde a primeira alteração de dados.",
+              minLength: {
+                value: 10,
+                message: "O número deve ter no mínimo 10 dígitos",
+              },
+              maxLength: {
+                value: 15,
+                message: "O número deve ter no máximo 15 dígitos",
+              },
+              pattern: {
+                value: /^\+?\d{10,15}$/,
+                message: "Número inválido. Apenas números, com opcional '+'.",
+              },
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <ThemedInput
+                value={value}
+                type="outlined"
+                keyboardType="phone-pad"
+                placeholder="Número de contato da empresa"
+                onChangeText={onChange}
+                onBlur={onBlur}
+                errorMessage={errors.phoneNumber?.message}
+              />
+            )}
+          />
+
+          {/* input com o endereço da empresa */}
+          <ThemedText style={styles.label}>Endereço da empresa</ThemedText>
+          <Controller
+            control={control}
+            name="address"
+            rules={{
+              required: "O Endereço é obrigatório desde a primeira alteração de dados. ",
+              maxLength:{
+                value: 100,
+                message:"O número máximo de caracteres para o endereço e de 100!"
+              },
+              minLength:{
+                value: 10,
+                message:"O número mínimo de caracteres para o endereço e de 10"
+              }
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <ThemedInput
+                value={value}
+                type="outlined"
+                placeholder="Endereço da empresa"
+                onChangeText={onChange}
+                onBlur={onBlur}
+                errorMessage={errors.address?.message}
               />
             )}
           />
