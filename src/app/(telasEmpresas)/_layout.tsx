@@ -42,7 +42,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="servicos"
+          name="(servicos)"
           options={{
             title: "Serviços",
           tabBarIcon: ({ color }) => <AntDesign size={28} name="pluscircle" color={color} />,
