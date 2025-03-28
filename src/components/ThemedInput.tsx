@@ -17,6 +17,8 @@ export type ThemedInputProps = TextInputProps & {
   type?: "default" | "outlined" | "underline" | "big";
   isPassword?: boolean;
   errorMessage?: string;
+  icon?: React.ReactNode
+  iconPosition?: 'left' | 'right';
 };
 
 export function ThemedInput({
@@ -26,6 +28,8 @@ export function ThemedInput({
   type = "default",
   isPassword = false,
   errorMessage = "",
+  icon,
+  iconPosition = "left",
   ...rest
 }: ThemedInputProps) {
   const [secureText, setSecureText] = useState(isPassword);
@@ -59,18 +63,35 @@ export function ThemedInput({
   ];
 
   return (
-    <>
+<>
       <View style={containerStyle}>
+        {icon && iconPosition === 'left' && (
+          <View style={[styles.iconContainer, styles.iconLeft]}>
+            {icon}
+          </View>
+        )}
+        
         <TextInput
-          style={inputStyle}
+          style={[
+            inputStyle,
+            icon && iconPosition === 'left' ? styles.inputWithLeftIcon : null,
+            icon && iconPosition === 'right' ? styles.inputWithRightIcon : null,
+          ]}
           placeholderTextColor={textColor}
           secureTextEntry={isPassword ? secureText : false}
           {...rest}
         />
+        
+        {icon && iconPosition === 'right' && !isPassword && (
+          <View style={[styles.iconContainer, styles.iconRight]}>
+            {icon}
+          </View>
+        )}
+        
         {isPassword && (
           <TouchableOpacity
             onPress={() => setSecureText(!secureText)}
-            style={styles.icon}
+            style={[styles.iconContainer, styles.iconRight]}
           >
             <Ionicons
               name={secureText ? "eye-off" : "eye"}
@@ -104,6 +125,26 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 8,
+  },
+
+  iconContainer: {
+    padding: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  inputWithLeftIcon: {
+    paddingLeft: 8, 
+  },
+  inputWithRightIcon: {
+    paddingRight: 8, 
+  },
+
+  iconLeft: {
+    marginRight: 4,
+  },
+  iconRight: {
+    marginLeft: 4,
   },
 
   underline: {

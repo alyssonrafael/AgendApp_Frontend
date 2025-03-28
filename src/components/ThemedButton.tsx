@@ -1,11 +1,15 @@
 import React from 'react';
-import { Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
+import { Text, TouchableOpacity, ActivityIndicator, StyleSheet, View, StyleProp, TextStyle, ViewStyle } from 'react-native';
 
 export type ThemedButtonProps = {
   title: string;
   onPress: () => void;
   isLoading?: boolean;
   disabled?: boolean;
+  icon?: React.ReactNode
+  iconPosition?: 'left' | 'right'
+  style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
 };
 
 export function ThemedButton({
@@ -13,18 +17,34 @@ export function ThemedButton({
   onPress,
   isLoading = false,
   disabled = false,
+  icon,
+  iconPosition = 'right',
+  style,
+  textStyle,
 }: ThemedButtonProps) {
   return (
     <TouchableOpacity
-      style={[styles.button, disabled && styles.disabled]}
+      style={[styles.button, disabled && styles.disabled, style]}
       onPress={onPress}
       disabled={isLoading || disabled}
       activeOpacity={0.7}
     >
-      {isLoading ? (
+{isLoading ? (
         <ActivityIndicator size="small" color="#FFF" />
       ) : (
-        <Text style={styles.buttonText}>{title}</Text>
+        <View style={styles.buttonContent}>
+          {icon && iconPosition === 'left' && (
+            <View style={styles.iconLeft}>
+              {icon}
+            </View>
+          )}
+          <Text style={[styles.buttonText, textStyle]}>{title}</Text>
+          {icon && iconPosition === 'right' && (
+            <View style={styles.iconRight}>
+              {icon}
+            </View>
+          )}
+        </View>
       )}
     </TouchableOpacity>
   );
@@ -44,6 +64,17 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 20,
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconLeft: {
+    marginRight: 10,
+  },
+  iconRight: {
+    marginLeft: 10,
   },
   disabled: {
     opacity: 0.5,
