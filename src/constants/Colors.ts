@@ -14,6 +14,9 @@ export const Colors = {
     icon: '#687076',
     tabIconDefault: '#687076',
     tabIconSelected: '#4A90E2',
+    backgroundCard: '#f5f5f5',
+    badget: '#e5e7eb',
+    textBadget: '#1f2937'
   },
   dark: {
     text: '#ECEDEE',
@@ -22,5 +25,8 @@ export const Colors = {
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: '#4A90E2',
+    backgroundCard: '#1e1e1e',
+    badget: '#000',
+    textBadget: '#fff'
   },
 };
