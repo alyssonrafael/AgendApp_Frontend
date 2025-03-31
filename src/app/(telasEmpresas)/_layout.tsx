@@ -49,10 +49,10 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="reservas"
+          name="(horarios)"
           options={{
-            title: "Reservas",
-          tabBarIcon: ({ color }) => <Octicons size={28} name="briefcase" color={color} />,
+            title: "Horários",
+          tabBarIcon: ({ color }) => <Octicons size={28} name="clock" color={color} />,
           }}
         />
         <Tabs.Screen

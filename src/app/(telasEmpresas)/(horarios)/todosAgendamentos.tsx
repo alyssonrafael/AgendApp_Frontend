@@ -1,12 +1,12 @@
 import { StyleSheet } from "react-native";
-
-import { ThemedText } from "@/src/components/ThemedText";
+import React from "react";
 import { ThemedView } from "@/src/components/ThemedView";
+import { ThemedText } from "@/src/components/ThemedText";
 
-export default function ReservasScreen() {
+export default function todosAgendamentos() {
   return (
     <ThemedView style={styles.container}>
-      <ThemedText>ola essa e a tela de reservas da empresa</ThemedText>
+      <ThemedText>todosAgendamentos</ThemedText>
     </ThemedView>
   );
 }
