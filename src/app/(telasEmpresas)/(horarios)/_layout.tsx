@@ -1,4 +1,5 @@
 import { AgendamentosProvider } from "@/src/context/AgendamentosEmpresaContext";
+import { GradeHorariosProvider } from "@/src/context/GradeHorariosContext";
 import { Stack } from "expo-router";
 
 export default function horariosLayout() {
@@ -6,6 +7,7 @@ export default function horariosLayout() {
     <>
       {/* Provide do contexto com os agendamentos da empresa logada */}
       <AgendamentosProvider>
+        <GradeHorariosProvider>
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen
@@ -21,6 +23,7 @@ export default function horariosLayout() {
             options={{ title: "Gerenciar grade de horários" }}
           />
         </Stack>
+        </GradeHorariosProvider>
       </AgendamentosProvider>
     </>
   );
