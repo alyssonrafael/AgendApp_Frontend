@@ -15,7 +15,7 @@ interface GradeHorario {
 }
 
 // Interface para indisponibilidades
-interface Indisponibilidade {
+export interface Indisponibilidade {
   id: string;
   motivo: string; // Razão da indisponibilidade
   horario: string; // Intervalo no formato "HH:MM-HH:MM"
@@ -45,8 +45,23 @@ interface GradeHorariosContextData {
   fetchGradeHorarios: () => Promise<void>;
   fetchHorariosDisponiveis: (date: Date) => Promise<HorarioDisponivel[]>;
   getGradeForDay: (dateString: string) => GradeHorario | undefined;
+  salvarGradeHorario: (config: {
+    id: string;
+    diaSemana: number;
+    inicio: string;
+    fim: string;
+    intervalo: number;
+  }) => Promise<void>;//atualizar ou criar uma nova grade de horario
+  removerGradeHorario: (diaSemana: number) => Promise<void>; // Remove grade de horários por dia da semana
   indisponibilidades: Indisponibilidade[]; // Lista de indisponibilidades
   fetchIndisponibilidades: () => Promise<void>;
+  removeIndisponibilidade: (id: string) => Promise<void>//remove indisponibilidade por id
+  createIndisponibilidade: (data: {
+    inicio: string;
+    fim: string;
+    motivo?: string;
+    data: string | null;
+  }) => Promise<void>;//cria uma nova indisponibilidade
   getMotivoIndisponibilidade: (data: string, horario: string) => string | null;
   refreshHorarios: () => Promise<void>; // Atualiza todos os dados
 }
@@ -173,6 +188,149 @@ export const GradeHorariosProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     }
   };
+  // funçao para salvar ou atualizar um grade de horario
+  const salvarGradeHorario = async (config: {
+    id: string;
+    diaSemana: number;
+    inicio: string;
+    fim: string;
+    intervalo: number;
+  }): Promise<void> => {
+    try {
+      const token = await AsyncStorage.getItem("userToken");
+      // cria um payload com os dados da grade de horario
+      const payload = {
+        diasSemana: [config.diaSemana],
+        inicio: config.inicio,
+        fim: config.fim,
+        intervalo: config.intervalo,
+      };
+      // verifica se o id da grade de horario começa com novo- para saber se e uma nova grade ou uma atualização
+      const ehNovo = config.id.startsWith("novo-");
+  
+      if (ehNovo) {
+        // Criação (POST)
+        await api.post("/grade-horario", payload, {
+          headers: { Authorization: token },
+        });
+      } else {
+        // Atualização (PUT)
+        await api.put(`/grade-horario/${config.id}`, payload, {
+          headers: { Authorization: token },
+        });
+      }
+  
+      // Atualiza a lista de horários após salvar
+      await refreshHorarios();
+    } catch (error) {
+      throw error; // Propaga o erro para ser tratado no componente
+    }
+  };
+  // funçao para remover uma grade de horario
+  const removerGradeHorario = async (diaSemana: number): Promise<void> => {
+    try {
+      const token = await AsyncStorage.getItem("userToken");
+  
+      // Verifica se é o último dia da grade
+      const isUltimoDia = state.gradeHorarios.filter(g => g.diaSemana !== diaSemana).length === 0;
+  
+      // Executa a remoção na API
+      await api.delete("/grade-horario/remover-dia", {
+        headers: { Authorization: token },
+        data: { diaSemana },
+      });
+  
+      // Atualização otimista do estado
+      setState(prev => {
+        const newGradeHorarios = prev.gradeHorarios.filter(g => g.diaSemana !== diaSemana);
+        
+        const newHorariosDisponiveis = { ...prev.horariosDisponiveis };
+        
+        // Se for o último dia, limpa todos os horários disponíveis
+        if (isUltimoDia) {
+          Object.keys(newHorariosDisponiveis).forEach(date => {
+            newHorariosDisponiveis[date] = [];
+          });
+        } else {
+          // Caso contrário, limpa apenas os horários do dia removido
+          Object.keys(newHorariosDisponiveis).forEach(date => {
+            const dateObj = new Date(date);
+            if (dateObj.getDay() === diaSemana) {
+              newHorariosDisponiveis[date] = [];
+            }
+          });
+        }
+        //atualiza o estado com as novas grades e horarios
+        return {
+          ...prev,
+          gradeHorarios: newGradeHorarios,
+          horariosDisponiveis: newHorariosDisponiveis
+        };
+      });
+  
+      // Atualiza os dados 
+      await refreshHorarios();
+    } catch (error) {
+      // Reverte a atualização otimista em caso de erro
+      await fetchGradeHorarios();
+      throw error; //propaga o erro para ser tratado no componente
+    }
+  };
+
+//remove uma indisponibilidade
+const removeIndisponibilidade = async (id: string): Promise<void> => {
+  try {
+    const token = await AsyncStorage.getItem("userToken");
+    await api.delete(`/indisponibilidade/remover`, {
+      headers: { Authorization: `${token}` },
+      data: { indisponibilidadeId: id },
+    });
+    
+    // Atualização otimista do estado
+    setState(prev => ({
+      ...prev,
+      indisponibilidades: prev.indisponibilidades.filter(item => item.id !== id)
+    }));
+    
+    // Atualiza os horários disponíveis
+    await refreshHorarios();
+  } catch (error) {
+    // Reverte a atualização otimista em caso de erro
+    await fetchIndisponibilidades();
+    throw error; // Propaga o erro para ser tratado no componente
+  }
+};
+
+//cria nova indisponibilidade
+const createIndisponibilidade = async (data: {
+  inicio: string;
+  fim: string;
+  motivo?: string;
+  data: string | null;
+}): Promise<void> => {
+  try {
+    const token = await AsyncStorage.getItem("userToken");
+    const formattedDate = data.data 
+      ? data.data.split("-").reverse().join("-")
+      : null;
+
+    await api.post(
+      "/indisponibilidade/criar",
+      {
+        inicio: data.inicio,
+        fim: data.fim,
+        motivo: data.motivo,
+        data: formattedDate,
+      },
+      { headers: { Authorization: `${token}` } }
+    );
+
+    await fetchIndisponibilidades(); // Atualiza a lista
+    await refreshHorarios(); // Atualiza os horários disponíveis
+  } catch (error) {
+    throw error; // Propaga o erro para tratamento específico
+  }
+};
 
   // Encontra a grade de horários para um dia específico da semana
   const getGradeForDay = (dateString: string): GradeHorario | undefined => {
@@ -281,7 +439,11 @@ export const GradeHorariosProvider: React.FC<{ children: React.ReactNode }> = ({
         fetchGradeHorarios,
         fetchHorariosDisponiveis,
         getGradeForDay,
+        salvarGradeHorario,
+        removerGradeHorario,
         fetchIndisponibilidades,
+        removeIndisponibilidade,
+        createIndisponibilidade,
         getMotivoIndisponibilidade,
         refreshHorarios,
       }}

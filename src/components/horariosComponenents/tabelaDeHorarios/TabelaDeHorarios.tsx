@@ -15,7 +15,7 @@ import {HorarioDisponivel, useGradeHorarios} from "../../../context/GradeHorario
 const TabelaDeHorarios: React.FC = () => {
   // Contexto de agendamentos - fornece a lista de agendamentos e função para selecionar
   const { agendamentos, setAgendamentoSelecionado } = useAgendamentos();
-  
+
   // Contexto de grade de horários - fornece horários disponíveis, data selecionada, etc.
   const {
     horariosDisponiveis,  // Objeto com horários disponíveis por data
@@ -119,8 +119,9 @@ const TabelaDeHorarios: React.FC = () => {
       {/* Seção superior com cabeçalho e seletor de datas */}
       <View style={styles.topSection}>
         <ThemedText style={styles.headerText}>
-          Selecione um dia para visualizar os horários disponíveis. Para ver
-          mais dias, acesse "Todos os Agendamentos".
+          Escolha um dia para ver os horários disponíveis. Para mais datas,
+          acesse "Todos os Agendamentos". Alterações recentes na grade podem
+          ocultar agendamentos na tabela abaixo!
         </ThemedText>
         
         {/* Seletor de datas */}
@@ -131,7 +132,7 @@ const TabelaDeHorarios: React.FC = () => {
             onSelectDate={setSelectedDate}
           />
         </View>
-        
+
         {/* Lista de horários */}
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
@@ -168,7 +169,7 @@ const TabelaDeHorarios: React.FC = () => {
           )}
         </ScrollView>
       </View>
-      
+
       {/* Botão para recarregar horários */}
       <ThemedButton
         title="Recaregar Horários"
@@ -178,7 +179,7 @@ const TabelaDeHorarios: React.FC = () => {
         isLoading={loading}
         style={{ marginTop: 8, marginBottom: 0 }}
       />
-      
+
       {/* Modal que mostra detalhes do horário selecionado */}
       <TimeSlotModal
         visible={modalVisible}
@@ -203,7 +204,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     textAlign: "center",
-    fontSize: 14,
+    fontSize: 11,
     fontWeight: "bold",
   },
   scrollContainer: {
