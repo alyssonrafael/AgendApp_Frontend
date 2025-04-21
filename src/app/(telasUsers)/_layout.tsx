@@ -57,7 +57,7 @@ export default function TabLayout() {
               }}
             />
             <Tabs.Screen
-              name="agendamento"
+              name="(agendamento)"
               options={{
                 title: "Agendamentos",
                 tabBarIcon: ({ color, focused }) => (
