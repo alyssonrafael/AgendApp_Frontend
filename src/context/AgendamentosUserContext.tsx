@@ -70,6 +70,7 @@ interface AgendamentoUserContextData {
   setAgendamentoSelecionado: (agendamento: AgendamentoUser | null) => void;
   deleteAgendamento: (id: string) => Promise<void>;
   criarAgendamento: (data: CriarAgendamentoData) => Promise<void>; // Mudou o retorno para void
+  totalAgendamentos: number
 }
 
 const AgendamentoUserContext = createContext<AgendamentoUserContextData>(
@@ -106,6 +107,8 @@ export const AgendamentoUserProvider = ({
 }) => {
   //estado de todos os agendamentos
   const [agendamentos, setAgendamentos] = useState<AgendamentoUser[]>([]);
+  // total de agendamentos do usuario
+  const totalAgendamentos = agendamentos?.length || 0;
   // estado para controle dos loadings
   const [loading, setLoading] = useState(false);
   const [loadDelete, setLoadDelete] = useState(false);
@@ -283,6 +286,7 @@ export const AgendamentoUserProvider = ({
         setAgendamentoSelecionado,
         deleteAgendamento,
         criarAgendamento,
+        totalAgendamentos,
       }}
     >
       {children}

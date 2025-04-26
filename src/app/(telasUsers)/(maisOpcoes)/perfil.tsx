@@ -12,10 +12,13 @@ import { ThemedView } from "@/src/components/ThemedView";
 import { ThemedButton } from "@/src/components/ThemedButton";
 import { router } from "expo-router";
 import { useUser } from "@/src/context/UserContext";
+import { useAgendamentoUser } from "@/src/context/AgendamentosUserContext";
 
 export default function Perfil() {
   //pegando informaçoes do usuario do contexto
   const { user, loading } = useUser();
+  // pegando o total de agendamentos do contexto
+  const { totalAgendamentos } = useAgendamentoUser();
 
   // Ref para animação
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -36,7 +39,7 @@ export default function Perfil() {
     ]).start();
   }, []);
 
-//se loading exibe o indicativo
+  //se loading exibe o indicativo
   if (loading) {
     return (
       <ThemedView style={styles.containerloading}>
@@ -45,7 +48,7 @@ export default function Perfil() {
       </ThemedView>
     );
   }
-// se nao consguir o user exibe essa tela indicando o erro 
+  // se nao consguir o user exibe essa tela indicando o erro
   if (!user) {
     return (
       <ThemedView style={styles.containerloading}>
@@ -107,7 +110,10 @@ export default function Perfil() {
                 Total de agendamentos
               </ThemedText>
               <ThemedText style={{ color: "#007AFF" }}>
-                Rota a ser implementada
+                {/* se for maior que zero mostra o numero se não o aviso que não tem */}
+                {totalAgendamentos > 0
+                  ? `${totalAgendamentos} agendamentos`
+                  : "Nenhum agendamento encontrado"}
               </ThemedText>
             </View>
             <View>
