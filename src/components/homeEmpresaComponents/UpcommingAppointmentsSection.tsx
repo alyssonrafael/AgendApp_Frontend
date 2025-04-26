@@ -24,7 +24,7 @@ const UpcomingAppointmentsSection = ({
   // header com o botao de refresh dos agendamentos
   <View style={{ marginBottom: 20, padding: 16 }}>
     <View style={styles.headerSection}>
-      <ThemedText type="subtitle">Próximos Agendamentos (4)</ThemedText>
+      <ThemedText type="subtitle">Próximos Agendamentos ({proximosAgendamentos.length})</ThemedText>
       <TouchableOpacity
         onPress={handleRefresh}
         style={styles.reloadButton}
