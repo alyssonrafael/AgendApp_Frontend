@@ -11,6 +11,7 @@ import { useMessage } from "./MessageContext";
 
 // inteface do modelo de serviço para o cliente como retorna do back
 interface Servico {
+  id: string;
   nome: string;
   descricao: string;
   duracao: number;
@@ -31,6 +32,28 @@ export interface AgendamentoUser {
   horario: string;
   servico: Servico;
 }
+// Interface para o retorno da API de criação
+interface AgendamentoResponse {
+  id: string;
+  data: string;
+  horario: string;
+  ativo: boolean;
+  clienteId: string;
+  servicoId: string;
+  createdAt: string;
+}
+// Interface para a resposta completa da API
+interface CriarAgendamentoResponse {
+  message: string;
+  agendamento: AgendamentoResponse;
+}
+// interface para a criação de um agendamento
+interface CriarAgendamentoData {
+  data: string;
+  horario: string;
+  servicoId: string;
+}
+
 // resposta do gendamento vindo do back
 interface AgendamentosResponse {
   message: string;
@@ -46,6 +69,7 @@ interface AgendamentoUserContextData {
   agendamentoSelecionado: AgendamentoUser | null;
   setAgendamentoSelecionado: (agendamento: AgendamentoUser | null) => void;
   deleteAgendamento: (id: string) => Promise<void>;
+  criarAgendamento: (data: CriarAgendamentoData) => Promise<void>; // Mudou o retorno para void
 }
 
 const AgendamentoUserContext = createContext<AgendamentoUserContextData>(
@@ -154,7 +178,7 @@ export const AgendamentoUserProvider = ({
   // funçao para deletar um agendamento
   const deleteAgendamento = async (id: string) => {
     try {
-      setLoadDelete(true)
+      setLoadDelete(true);
       const token = await AsyncStorage.getItem("userToken");
       // Chamada para a API conforme especificado
       await api.delete(`/meus-agendamentos-excluir/${id}`, {
@@ -191,6 +215,58 @@ export const AgendamentoUserProvider = ({
     }
   };
 
+  // criar agendamento
+  const criarAgendamento = async (
+    agendamentoData: CriarAgendamentoData
+  ): Promise<void> => {
+    try {
+      setLoading(true);
+      const token = await AsyncStorage.getItem("userToken");
+      // Cria o agendamento na API
+      const response = await api.post<CriarAgendamentoResponse>(
+        "/agendar",
+        agendamentoData,
+        {
+          headers: { Authorization: `${token}` },
+        }
+      );
+
+      // se tiver resposta de sucesso Recarrega a lista completa de agendamentos
+      if (response.data.message === "Appointment created successfully") {
+        showMessage("success", "Agendamento criado com sucesso!");
+        await loadAgendamentos();
+        // se nao repassa o erro
+      } else {
+        throw new Error("Erro ao criar agendamento");
+      }
+      // tratamento de erro personalizado para cada mensagem
+    } catch (err: any) {
+      let errorMessage = "Erro ao criar agendamento";
+      if (err.response) {
+        if (err.response.data.error === "Requested time conflicts with an existing appointment") {
+          errorMessage ="O Horário já foi ocupado! Por favor atualize os horários disponiveis e tente novamente.";
+        } else if (err.response.data.error === "Appointment date and time must be in the future") {
+          errorMessage = "O agendamento deve ter data futura, tente novamente.";
+        } else if (err.response.data.error === "Requested time is unavailable due to a scheduled unavailability") {
+          errorMessage = "A uma indisponibilidade no horario solicitato, atualize e tente novamente!";
+        } else if (err.response.status === 404) {
+          errorMessage = "Dados invalidos para criar agendamento";
+        } else if (err.response.status === 400) {
+          errorMessage = "Dados invalidos para criar agendamento";
+        } else if (err.response.status === 404) {
+          errorMessage = err.response.data.error || "Serviço não encontrado";
+        } else if (err.response.status === 500) {
+          errorMessage = "Erro interno no servidor";
+        } else if (err.request) {
+          errorMessage = "Sem resposta do servidor. Verifique sua conexão";
+        }
+      }
+      showMessage("danger", errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
   // chama o load assim que o componente e contexto e montado a primeira vez
   useEffect(() => {
     loadAgendamentos();
@@ -206,6 +282,7 @@ export const AgendamentoUserProvider = ({
         agendamentoSelecionado,
         setAgendamentoSelecionado,
         deleteAgendamento,
+        criarAgendamento,
       }}
     >
       {children}
