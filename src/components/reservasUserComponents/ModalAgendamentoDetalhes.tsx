@@ -94,7 +94,7 @@ export const ModalAgendamentoDetalhes: React.FC = () => {
                   size={16}
                   style={styles.icon}
                 />
-                <ThemedText>
+                <ThemedText style={styles.infoText}>
                   {agendamentoSelecionado.servico.empresa.nomeEmpresa}
                 </ThemedText>
               </View>
@@ -109,7 +109,7 @@ export const ModalAgendamentoDetalhes: React.FC = () => {
                 }
               >
                 <Ionicons name="mail-outline" size={16} style={styles.icon} />
-                <ThemedText>
+                <ThemedText style={styles.infoText}>
                   {agendamentoSelecionado.servico.empresa.email}
                 </ThemedText>
                 <Ionicons
@@ -130,7 +130,7 @@ export const ModalAgendamentoDetalhes: React.FC = () => {
                   }
                 >
                   <Ionicons name="call-outline" size={16} style={styles.icon} />
-                  <ThemedText>
+                  <ThemedText style={styles.infoText}>
                     {agendamentoSelecionado.servico.empresa.telefone}
                   </ThemedText>
                   <Ionicons
@@ -144,7 +144,7 @@ export const ModalAgendamentoDetalhes: React.FC = () => {
               {agendamentoSelecionado.servico.empresa.endereco && (
                 <View style={styles.infoRow}>
                   <Ionicons name="map-outline" size={16} style={styles.icon} />
-                  <ThemedText>
+                  <ThemedText style={styles.infoText}>
                     {agendamentoSelecionado.servico.empresa.endereco}
                   </ThemedText>
                 </View>
@@ -162,12 +162,12 @@ export const ModalAgendamentoDetalhes: React.FC = () => {
                   size={16}
                   style={styles.icon}
                 />
-                <ThemedText>{agendamentoSelecionado.dataFormatada}</ThemedText>
+                <ThemedText style={styles.infoText}>{agendamentoSelecionado.dataFormatada}</ThemedText>
               </View>
 
               <View style={styles.infoRow}>
                 <Ionicons name="time-outline" size={16} style={styles.icon} />
-                <ThemedText>{agendamentoSelecionado.horario}</ThemedText>
+                <ThemedText style={styles.infoText}>{agendamentoSelecionado.horario}</ThemedText>
               </View>
             </View>
 
@@ -178,19 +178,19 @@ export const ModalAgendamentoDetalhes: React.FC = () => {
               <ThemedText type="subtitle">Serviço</ThemedText>
               <View style={styles.infoRow}>
                 <Ionicons name="cut-outline" size={16} style={styles.icon} />
-                <ThemedText>{agendamentoSelecionado.servico.nome}</ThemedText>
+                <ThemedText style={styles.infoText}>{agendamentoSelecionado.servico.nome}</ThemedText>
               </View>
 
               <View style={styles.infoRow}>
                 <Ionicons name="time-outline" size={16} style={styles.icon} />
-                <ThemedText>
+                <ThemedText style={styles.infoText}>
                   {agendamentoSelecionado.servico.duracao} minutos
                 </ThemedText>
               </View>
 
               <View style={styles.infoRow}>
                 <Ionicons name="cash-outline" size={16} style={styles.icon} />
-                <ThemedText>
+                <ThemedText style={styles.infoText}>
                   {agendamentoSelecionado.servico.custo.toLocaleString(
                     "pt-BR",
                     {
@@ -271,10 +271,17 @@ const styles = StyleSheet.create({
   },
   infoRow: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     marginVertical: 2,
     paddingVertical: 4,
     flexShrink: 1,
+    flexWrap:"wrap"
+  },
+  infoText: {
+    flex: 1, 
+    flexWrap: 'wrap', 
+    marginLeft: 4, 
+    maxWidth: '90%', 
   },
   icon: {
     marginRight: 10,
