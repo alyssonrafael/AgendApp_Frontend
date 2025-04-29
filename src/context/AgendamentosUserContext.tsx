@@ -67,6 +67,9 @@ interface AgendamentoUserContextData {
   loadDelete: boolean;
   loadAgendamentos: () => Promise<void>;
   agendamentoSelecionado: AgendamentoUser | null;
+  agendamentosDoDia: AgendamentoUser[];
+  dataSelecionada: string | null;
+  setDataSelecionada: (data: string | null) => void;
   setAgendamentoSelecionado: (agendamento: AgendamentoUser | null) => void;
   deleteAgendamento: (id: string) => Promise<void>;
   criarAgendamento: (data: CriarAgendamentoData) => Promise<void>; // Mudou o retorno para void
@@ -115,6 +118,11 @@ export const AgendamentoUserProvider = ({
   // estado para controle do agendamento selecionado
   const [agendamentoSelecionado, setAgendamentoSelecionado] =
     useState<AgendamentoUser | null>(null);
+    // estado para controlar os agendamentos do dia
+    const [dataSelecionada, setDataSelecionada] = useState<string | null>(null);
+    const agendamentosDoDia = dataSelecionada
+    ? agendamentos.filter(ag => ag.dataObj.toISOString().split('T')[0] === dataSelecionada)
+    : [];
   // hook da mensagem de feedback
   const { showMessage } = useMessage();
 
@@ -283,6 +291,9 @@ export const AgendamentoUserProvider = ({
         loadDelete,
         loadAgendamentos,
         agendamentoSelecionado,
+        agendamentosDoDia,
+        dataSelecionada,
+        setDataSelecionada,
         setAgendamentoSelecionado,
         deleteAgendamento,
         criarAgendamento,
