@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { FlatList, StyleSheet, View, Platform } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import { FlatList, StyleSheet, View, Modal } from "react-native";
 import { useAgendamentos } from "@/src/context/AgendamentosEmpresaContext";
 import { ModalDetalhes } from "@/src/components/horariosComponenents/ModalDetalhes";
 import { AgendamentoCard } from "@/src/components/horariosComponenents/AgendamentoCard";
@@ -13,6 +12,7 @@ import { ThemedText } from "@/src/components/ThemedText";
 import { AgendamentoEmpty } from "@/src/components/horariosComponenents/AgendamentoEmpty";
 import { ThemedButton } from "@/src/components/ThemedButton";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
+import Calendario from "@/src/components/homeUserComponents/Calendario";
 
 export default function TodosAgendamentos() {
   // Importa valores e funções do contexto de agendamentos
@@ -51,18 +51,15 @@ export default function TodosAgendamentos() {
       : true;
 
     return matchesSearch && matchesDate;
-  });
-
-  // Atualiza a data ao selecionar no DateTimePicker
-  const handleDateChange = (event: any, date?: Date) => {
+  })
+  // atualiza a data selecionada
+  const handleDateSelect = (dateString: string) => {
+    const [year, month, day] = dateString.split("-").map(Number);
+    const selected = new Date(year, month - 1, day); // mês começa em 0
+    selected.setHours(0, 0, 0, 0); // Garante hora zerada
+    setSelectedDate(selected);
     setShowDatePicker(false);
-    if (Platform.OS === "android" && event.type !== "set") return;
-    if (date) {
-      const adjustedDate = new Date(date);
-      adjustedDate.setHours(0, 0, 0, 0);
-      setSelectedDate(adjustedDate);
-    }
-  };
+  };  
 
   // Altera a ordenação entre newest, oldest e alphabetical
   const handleSortPress = () => {
@@ -197,16 +194,35 @@ export default function TodosAgendamentos() {
         onSortPress={handleSortPress}
         onClearFilters={clearAllFilters}
       />
-      {/* Date Picker */}
-      {showDatePicker && (
-        <DateTimePicker
-          value={selectedDate || new Date()}
-          mode="date"
-          display={Platform.OS === "ios" ? "spinner" : "default"}
-          onChange={handleDateChange}
-          locale="pt-BR" // Adiciona suporte para português
-        />
-      )}
+      {/* modal com o calendario tematizado para escolha da data para filtrro */}
+      <Modal
+        visible={showDatePicker}
+        animationType="fade"
+        transparent={true}
+        statusBarTranslucent
+        onRequestClose={() => setShowDatePicker(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <ThemedView style={styles.modalContainer}>
+            <ThemedText type="subtitle" style={styles.modalTitle}>
+              Selecione a data desejada
+            </ThemedText>
+            <Calendario
+                onDayPress={(day) => {
+                  handleDateSelect(day.dateString);
+                }}
+            />
+
+            <ThemedButton
+              title="Fechar"
+              onPress={() => {
+                setShowDatePicker(false);
+              }}
+              style={styles.modalButton}
+            />
+          </ThemedView>
+        </View>
+      </Modal>
 
       {/* Lista de agendamentos organizada por dia mais comentada por conta da quandtidade de props passadas e conplexidade */}
       <FlatList
@@ -258,7 +274,7 @@ export default function TodosAgendamentos() {
           ) : null
         }
       />
-      {/* Modal para detalhes do agendamento selecionado */}  
+      {/* Modal para detalhes do agendamento selecionado */}
       <ModalDetalhes />
     </ThemedView>
   );
@@ -271,6 +287,27 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 16,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContainer: {
+    width: "90%",
+    maxWidth: 400,
+    borderRadius: 12,
+    padding: 20,
+    overflow: "hidden",
+  },
+  modalTitle: {
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  modalButton: {
+    marginTop: 2,
+    marginBottom: 0,
   },
   emptyListContent: {
     flex: 1,

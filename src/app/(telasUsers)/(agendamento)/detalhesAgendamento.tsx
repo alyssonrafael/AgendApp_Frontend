@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, ScrollView, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  View,
+  Modal,
+} from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
-import DateTimePicker, {
-  DateTimePickerEvent,
-} from "@react-native-community/datetimepicker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import api from "@/src/services/api";
@@ -16,6 +19,7 @@ import { useAgendamentoUser } from "@/src/context/AgendamentosUserContext";
 import { ConfirmacaoModal } from "@/src/components/agendamentosConponents/ConfirmacaoModal";
 import HorariosList from "@/src/components/agendamentosConponents/HorariosList";
 import DateSelector from "@/src/components/horariosComponenents/tabelaDeHorarios/DataSelector";
+import Calendario from "@/src/components/homeUserComponents/Calendario";
 
 // interface do serviço
 interface Servico {
@@ -265,7 +269,7 @@ export default function DetalhesAgendamento() {
     }
   };
 
-  const handleDateChange = (event: DateTimePickerEvent, date?: Date) => {
+  const handleDateChange = (date?: Date) => {
     setShowDatePicker(false); // Fecha o seletor de datas
 
     if (date) {
@@ -387,20 +391,41 @@ export default function DetalhesAgendamento() {
             >
               {/* Texto e ícone do botão */}
               <ThemedText>Escolher outra data</ThemedText>
-              <Ionicons name="calendar" size={20} color="#007AFF" />
               {/* Ícone do calendário */}
+              <Ionicons name="calendar" size={20} color="#007AFF" />
             </TouchableOpacity>
+            {/* modal com calendario tematico para melhor experiencia do usuario */}
+            <Modal
+              visible={showDatePicker}
+              animationType="fade"
+              transparent={true}
+              statusBarTranslucent
+              onRequestClose={() => setShowDatePicker(false)}
+            >
+              <View style={styles.modalOverlay}>
+                <ThemedView style={styles.modalContainer}>
+                  <ThemedText type="subtitle" style={styles.modalTitle}>
+                    Selecione a data desejada
+                  </ThemedText>
+                  <Calendario
+                    onDayPress={(day) => {
+                      const selectedDate = new Date(day.dateString);
+                      handleDateChange?.(selectedDate);
+                      setShowDatePicker(false);
+                    }}
+                    minDate={new Date().toISOString().split("T")[0]}
+                  />
 
-            {/* Seletor de data (aparece condicionalmente) */}
-            {showDatePicker && ( // Só renderiza se showDatePicker for true
-              <DateTimePicker
-                value={parseDateString(selectedDate)} // Converte a data selecionada (string) para objeto Date
-                mode="date" // Modo de seleção (apenas data)
-                display="default" // Estilo visual padrão do sistema
-                minimumDate={new Date()} // Só permite datas futuras (a partir de hoje)
-                onChange={handleDateChange} // Manipulador quando a data é alterada
-              />
-            )}
+                  <ThemedButton
+                    title="Fechar"
+                    onPress={() => {
+                      setShowDatePicker(false);
+                    }}
+                    style={styles.modalButton}
+                  />
+                </ThemedView>
+              </View>
+            </Modal>
           </ThemedView>
           {/* Seção de horários disponíveis */}
           <ThemedText style={styles.sectionTitle}>
@@ -549,6 +574,27 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContainer: {
+    width: "90%",
+    maxWidth: 400,
+    borderRadius: 12,
+    padding: 20,
+    overflow: "hidden",
+  },
+  modalTitle: {
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  modalButton: {
+    marginTop: 2,
+    marginBottom: 0,
   },
   card: {
     borderRadius: 10,

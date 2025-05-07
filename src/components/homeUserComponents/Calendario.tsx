@@ -13,10 +13,11 @@ interface CalendarioProps {
       disabled?: boolean;
     };
   };
+  minDate?:string;
   onDayPress?: (day: DateData) => void;
 }
 
-export default function Calendario({ markedDates = {}, onDayPress }: CalendarioProps) {
+export default function Calendario({ markedDates = {}, onDayPress, minDate }: CalendarioProps) {
   // usa o hook do esquema de cores personalizados
   const colorScheme = useColorScheme();
 
@@ -72,6 +73,7 @@ export default function Calendario({ markedDates = {}, onDayPress }: CalendarioP
       key={colorScheme}
       enableSwipeMonths={true}
       locale="pt-br"
+      minDate={minDate}
     />
     </View>
   );

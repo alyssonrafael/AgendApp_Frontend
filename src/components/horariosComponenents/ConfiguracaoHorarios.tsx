@@ -5,15 +5,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import DateTimePicker, {
-  DateTimePickerEvent,
-} from "@react-native-community/datetimepicker";
 import React, { useEffect, useState } from "react";
 import { ThemedView } from "../ThemedView";
 import { ThemedText } from "../ThemedText";
 import { useGradeHorarios } from "@/src/context/GradeHorariosContext";
 import { useMessage } from "@/src/context/MessageContext";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
+import CustomTimePicker from "./CustomTimePicker";
 
 // interface com as propriedades de configuraçao de horario
 interface ConfiguracaoHorario {
@@ -44,6 +42,7 @@ export default function ConfiguracaoHorarios() {
     index: null,
     type: null,
   });
+  const [showPicker, setShowPicker] = useState(false);
   const [loading, setLoading] = useState<LoadingStates>({
     saving: null,
     removing: null,
@@ -83,27 +82,24 @@ export default function ConfiguracaoHorarios() {
   }, [gradeHorarios]);
   // função para lidar com a mudança de horário no picker
   const handleTimeChange = (
-    event: DateTimePickerEvent,
-    selectedTime: Date | undefined,
+    time: Date | string | null,
     index: number,
     type: "inicio" | "fim"
   ) => {
-    if (!selectedTime) {
-      setSelectedPicker({ index: null, type: null });
+    let formattedTime: string;
+    if (typeof time === "string") {
+      formattedTime = time;
+    } else if (time instanceof Date) {
+      formattedTime = time.toTimeString().slice(0, 5); // HH:mm
+    } else {
       return;
     }
-
-    const horas = selectedTime.getHours().toString().padStart(2, "0");
-    const minutos = selectedTime.getMinutes().toString().padStart(2, "0");
-    const novaHora = `${horas}:${minutos}`;
-
+    // atualizaçao do estado de configuração
     setConfiguracoes((prev) => {
-      const novaLista = [...prev];
-      novaLista[index][type] = novaHora;
-      return novaLista;
+      const newConfig = [...prev];
+      newConfig[index][type] = formattedTime;
+      return newConfig;
     });
-
-    setSelectedPicker({ index: null, type: null });
   };
   // função para lidar com a mudança de intervalo
   const handleIntervalChange = (index: number, interval: number) => {
@@ -221,7 +217,11 @@ export default function ConfiguracaoHorarios() {
                   <ThemedText>Início:</ThemedText>
                   <TouchableOpacity
                     style={styles.timeButton}
-                    onPress={() => setSelectedPicker({ index, type: "inicio" })}
+                    // define qual e o piker e mostra o modal com o piker personalizado
+                    onPress={() => {
+                      setSelectedPicker({ index, type: "inicio" });
+                      setShowPicker(true);
+                    }}
                   >
                     <ThemedText>{config.inicio}</ThemedText>
                   </TouchableOpacity>
@@ -231,7 +231,11 @@ export default function ConfiguracaoHorarios() {
                   <ThemedText>Fim:</ThemedText>
                   <TouchableOpacity
                     style={styles.timeButton}
-                    onPress={() => setSelectedPicker({ index, type: "fim" })}
+                    // define qual e o piker e mostra o modal com o piker personalizado
+                    onPress={() => {
+                      setSelectedPicker({ index, type: "fim" });
+                      setShowPicker(true);
+                    }}
                   >
                     <ThemedText>{config.fim}</ThemedText>
                   </TouchableOpacity>
@@ -274,22 +278,32 @@ export default function ConfiguracaoHorarios() {
                 </ThemedText>
               </TouchableOpacity>
             )}
-            {/* Seletor de hora (aparece quando um horário é clicado) */}
+            {/* Seletor de hora (aparece quando um horário é clicado) mosta p time picker personalizado */}
             {selectedPicker.index === index && selectedPicker.type && (
-              <DateTimePicker
-                value={
-                  new Date(
-                    `1970-01-01T${config[selectedPicker.type] ?? "08:00"}:00`
-                  )
-                }
-                mode="time"
-                display="default"
-                onChange={(event, time) => {
-                  if (selectedPicker.type) {
-                    handleTimeChange(event, time, index, selectedPicker.type);
-                  }
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
-              />
+              >
+                <CustomTimePicker
+                  visible={showPicker}
+                  onClose={() => setShowPicker(false)}
+                  onTimeSelected={(time) => {
+                    if (selectedPicker.type) {
+                      handleTimeChange(time, index, selectedPicker.type);
+                    }
+                    setShowPicker(false);
+                  }}
+                  initialTime={
+                    selectedPicker.index !== null && selectedPicker.type
+                      ? configuracoes[selectedPicker.index][selectedPicker.type] ?? "08:00"
+                      : "08:00"
+                  }
+                  
+                />
+              </View>
             )}
             {/* Botões de ação (aparecem quando configurado) */}
             {estaConfigurado && (

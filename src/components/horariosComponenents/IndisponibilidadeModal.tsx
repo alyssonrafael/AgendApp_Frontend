@@ -11,12 +11,10 @@ import { ThemedView } from "@/src/components/ThemedView";
 import { ThemedText } from "@/src/components/ThemedText";
 import { ThemedInput } from "@/src/components/ThemedInput";
 import { Controller, useForm } from "react-hook-form";
-import DateTimePicker, {
-  EvtTypes,
-} from "@react-native-community/datetimepicker";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { useMessage } from "@/src/context/MessageContext";
 import { useGradeHorarios } from "@/src/context/GradeHorariosContext";
+import CustomTimePicker from "./CustomTimePicker";
 
 type FormData = {
   inicio: string; // Horário de início da indisponibilidade
@@ -74,7 +72,10 @@ export const IndisponibilidadeModal: React.FC<IndisponibilidadeModalProps> = ({
     },
   });
 
-  const isGlobal = watch("isGlobal"); // Observa a mudança do estado global
+  // Observa a mudança do estado global
+  const isGlobal = watch("isGlobal");
+  const inicioValue = watch("inicio");
+  const fimValue = watch("fim");
 
   // Função para salvar a indisponibilidade
   const handleSave = async (formData: FormData) => {
@@ -115,25 +116,12 @@ export const IndisponibilidadeModal: React.FC<IndisponibilidadeModalProps> = ({
     }
   };
   // Função para atualizar os horários selecionados
-  const handleTimeChange = (
-    _event: {
-      type: EvtTypes;
-      nativeEvent: { timestamp: number; utcOffset: number };
-    },
-    selectedTime: Date | undefined,
-    type: "inicio" | "fim"
-  ) => {
+  const handleTimeSelected = (time: string, type: "inicio" | "fim") => {
+    setValue(type, time, { shouldValidate: true });
     if (type === "inicio") {
       setShowInicioPicker(false);
     } else {
       setShowFimPicker(false);
-    }
-
-    if (selectedTime) {
-      const horas = selectedTime.getHours().toString().padStart(2, "0");
-      const minutos = selectedTime.getMinutes().toString().padStart(2, "0");
-      const timeString = `${horas}:${minutos}`;
-      setValue(type, timeString, { shouldValidate: true });
     }
   };
   // Validação para o campo de data
@@ -222,7 +210,7 @@ export const IndisponibilidadeModal: React.FC<IndisponibilidadeModalProps> = ({
               />
             )}
           />
-
+          {/* Seleção de horário de início com CustomTimePicker */}
           <View
             style={[styles.timeRow, { backgroundColor: timeButtonBackground }]}
           >
@@ -252,18 +240,15 @@ export const IndisponibilidadeModal: React.FC<IndisponibilidadeModalProps> = ({
               )}
             />
           </View>
-          {/* exibe o piker de horario */}
-          {showInicioPicker && (
-            <DateTimePicker
-              value={new Date(`1970-01-01T${watch("inicio")}:00`)}
-              mode="time"
-              display="default"
-              onChange={(event, time) =>
-                handleTimeChange(event, time, "inicio")
-              }
-            />
-          )}
-
+          <CustomTimePicker
+            visible={showInicioPicker}
+            onClose={() => setShowInicioPicker(false)}
+            onTimeSelected={(time) => handleTimeSelected(time, "inicio")}
+            initialTime={inicioValue}
+            hourLabel="Hora início"
+            minuteLabel="Minuto início"
+          />
+          {/* Seleção de horário de fim com CustomTimePicker */}
           <View
             style={[styles.timeRow, { backgroundColor: timeButtonBackground }]}
           >
@@ -293,16 +278,14 @@ export const IndisponibilidadeModal: React.FC<IndisponibilidadeModalProps> = ({
               )}
             />
           </View>
-          {/* exibe o piker de horario */}
-          {showFimPicker && (
-            <DateTimePicker
-              value={new Date(`1970-01-01T${watch("fim")}:00`)}
-              mode="time"
-              display="default"
-              onChange={(event, time) => handleTimeChange(event, time, "fim")}
-            />
-          )}
-
+          <CustomTimePicker
+            visible={showFimPicker}
+            onClose={() => setShowFimPicker(false)}
+            onTimeSelected={(time) => handleTimeSelected(time, "fim")}
+            initialTime={fimValue}
+            hourLabel="Hora fim"
+            minuteLabel="Minuto fim"
+          />
           <View style={styles.buttonRow}>
             {/* botao de confirmar criaçao */}
             <TouchableOpacity
