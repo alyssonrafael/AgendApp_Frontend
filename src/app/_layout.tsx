@@ -66,10 +66,10 @@ export default function RootLayout() {
       return false; // Permite o comportamento normal de voltar
     };
 
-    BackHandler.addEventListener("hardwareBackPress", handleBackPress);
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", handleBackPress);
 
     return () => {
-      BackHandler.removeEventListener("hardwareBackPress", handleBackPress);
+      backHandler.remove();
     };
   }, [router, segments]);
 
